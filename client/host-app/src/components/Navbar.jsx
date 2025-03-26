@@ -34,8 +34,8 @@ const AppNavbar = () => {
             <LinkContainer to="/">
               <Nav.Link>Home</Nav.Link>
             </LinkContainer>
-            <LinkContainer to="/game-progress">
-              <Nav.Link>Game Progress Microservice</Nav.Link>
+            <LinkContainer to="/leaderboard">
+              <Nav.Link>Leaderboard</Nav.Link>
             </LinkContainer>
           </Nav>
           <Nav className="ms-auto">

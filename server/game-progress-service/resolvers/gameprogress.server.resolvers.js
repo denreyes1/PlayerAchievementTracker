@@ -14,6 +14,18 @@ const resolvers = {
             } catch (err) {
                 throw new Error(`Error retrieving game progress: ${err.message}`);
             }
+        },
+
+        // Retrieve leaderboard sorted by rank (ascending)
+        async getLeaderboard(_, { limit }) {
+            try {
+                const leaderboard = await GameProgress.find({})
+                    .sort({ rank: 1 }) // Sorting by rank in ascending order (1st place first)
+                    .limit(limit || 10); // Default to top 10 if no limit is provided
+                return leaderboard;
+            } catch (err) {
+                throw new Error(`Error retrieving leaderboard: ${err.message}`);
+            }
         }
     },
 
@@ -25,7 +37,7 @@ const resolvers = {
                 if (existingProgress) {
                     throw new Error("Game progress already exists for this user.");
                 }
-                const newProgress = new GameProgress({ userId, ...progressData });
+                const newProgress = new GameProgress({ userId, ...progressData, updatedAt: new Date() });
                 await newProgress.save();
                 return newProgress;
             } catch (err) {
@@ -38,7 +50,9 @@ const resolvers = {
             try {
                 const updatedProgress = await GameProgress.findOneAndUpdate(
                     { userId },
-                    { $set: { ...progressData, updatedAt: new Date() } },
+                    { 
+                        $set: { ...progressData, updatedAt: new Date() }
+                    },
                     { new: true, upsert: true } // `upsert: true` creates a new document if not found
                 );
                 return updatedProgress;

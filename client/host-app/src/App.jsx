@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -7,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap CSS is import
 // Import the Login component using a relative path
 import Login from '../../auth-micro-frontend/src/components/Login';
 import Signup from '../../auth-micro-frontend/src/components/Signup';
+import Leaderboard from '../../game-progress-micro-frontend/src/components/Leaderboard';
 
 const App = () => {
   return (
@@ -22,6 +22,7 @@ const App = () => {
           } />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/game-progress" element={
             <div className="text-center">
               <h1>Game Progress Microservice</h1>

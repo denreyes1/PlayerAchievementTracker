@@ -21,6 +21,9 @@ const typeDefs = gql`
   type Query {
     # Retrieves the game progress for a specific user by userId
     getGameProgress(userId: ID!): GameProgress
+
+    # Retrieves the leaderboard sorted by rank in ascending order
+    getLeaderboard(limit: Int): [GameProgress]
   }
 
   input GameProgressInput {
