@@ -26,17 +26,21 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Reset error state before attempting login
+    setError(null);
     try {
       const { data } = await loginUser({ variables: { username, password } });
-      console.log('Login successful:', data.loginUser);
+      const user = data.loginUser.user;
+      
       localStorage.setItem('token', data.loginUser.token);
-      navigate('/dashboard'); // Redirect to a dashboard or home page
+      localStorage.setItem('userId', user.id);
+  
+      window.location.href = "/"; // Redirects to home after login
+  
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message); // Set error message
+      setError(error.message);
     }
-  };
+  };  
 
   return (
     <form onSubmit={handleSubmit} className="card p-4">
