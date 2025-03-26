@@ -1,61 +1,41 @@
-require('dotenv').config();
 const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
-const connectDB = require('./db'); // Ensure this path is correct
-const GameProgress = require('./models/GameProgress');
+const { ApolloServer } = require('apollo-server-express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const typeDefs = require('./schemas/gameprogress.server.schema');
+const resolvers = require('./resolvers/gameprogress.server.resolvers');
 
-   const typeDefs = gql`
-       type GameProgress {
-           id: ID!
-           userId: ID!
-           level: Int!
-           experiencePoints: Int!
-           score: Int!
-           rank: Int
-           achievements: [String]
-           progress: String
-           lastPlayed: String
-           updatedAt: String
-       }
 
-       type Query {
-           getGameProgress(userId: ID!): GameProgress
-       }
+async function startServer() {
+  dotenv.config();
 
-       type Mutation {
-           updateGameProgress(userId: ID!, level: Int, experiencePoints: Int, score: Int): GameProgress
-       }
-   `;
+  const app = express();
+  
+  // Middleware
+  app.use(express.json());
+  
+  // Connect to MongoDB
+  mongoose.connect('mongodb://0.0.0.0:27017/DenisjannReyes-lab-assignment3', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }).then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error(err));
+  // Create a new ApolloServer instance and pass the schema data
+  const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req, res }) => ({ req, res }),
+  });
 
-   const resolvers = {
-       Query: {
-           getGameProgress: async (_, { userId }) => {
-               return await GameProgress.findOne({ userId });
-           },
-       },
-       Mutation: {
-           updateGameProgress: async (_, { userId, level, experiencePoints, score }) => {
-               const progress = await GameProgress.findOneAndUpdate(
-                   { userId },
-                   { level, experiencePoints, score, updatedAt: new Date() },
-                   { new: true }
-               );
-               return progress;
-           },
-       },
-   };
+  await apolloServer.start();
 
-   const startServer = async () => {
-    const app = express();
-    const server = new ApolloServer({ typeDefs, resolvers });
-    await server.start();
-    server.applyMiddleware({ app });
+  // Apply Apollo GraphQL middleware and specify the path to /graphql
+  apolloServer.applyMiddleware({ app, path: '/graphql' });
 
-    await connectDB(); // Connect to MongoDB
-
-    app.listen({ port: 4001 }, () =>
-        console.log(`Server ready at http://localhost:4001${server.graphqlPath}`)
-    );
-};
+  const PORT = 4001;
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}/graphql`);
+  });
+}
 
 startServer();
