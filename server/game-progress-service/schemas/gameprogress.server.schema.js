@@ -1,14 +1,21 @@
 const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
-  # Custom scalar type to support arbitrary JSON objects
+  # Import GraphQL JSON scalar
   scalar JSON
 
   # GameProgress type represents the progress data for a user
   type GameProgress {
     id: ID!
     userId: ID!
-    progress: JSON
+    level: Int
+    experiencePoints: Int
+    score: Int
+    rank: Int
+    achievements: [String]
+    progress: String
+    lastPlayed: String
+    updatedAt: String
   }
 
   type Query {
@@ -16,9 +23,23 @@ const typeDefs = gql`
     getGameProgress(userId: ID!): GameProgress
   }
 
+  input GameProgressInput {
+    level: Int
+    experiencePoints: Int
+    score: Int
+    rank: Int
+    achievements: [String]
+    progress: String
+    lastPlayed: String
+    updatedAt: String
+  }
+
   type Mutation {
+    # Adds a new game progress record for a specific user. Fails if a record already exists.
+    addGameProgress(userId: ID!, progressData: GameProgressInput!): GameProgress
+    
     # Updates the game progress for a specific user. If no record exists, one is created.
-    updateGameProgress(userId: ID!, progressData: JSON): GameProgress
+    updateGameProgress(userId: ID!, progressData: GameProgressInput!): GameProgress
   }
 `;
 
