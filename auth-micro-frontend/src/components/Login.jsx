@@ -4,47 +4,52 @@ import { useMutation, gql } from '@apollo/client';
 import { useNavigate, Link } from 'react-router-dom';
 
 const LOGIN_MUTATION = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      token
+  mutation Login($username: String!, $password: String!) {
+    loginUser(username: $username, password: $password) {
+      message
       user {
         id
         username
         email
+        role
       }
     }
   }
 `;
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [login] = useMutation(LOGIN_MUTATION);
+  const [error, setError] = useState(null); // State for error message
+  const [loginUser] = useMutation(LOGIN_MUTATION);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); // Reset error state before attempting login
     try {
-      const { data } = await login({ variables: { email, password } });
-      console.log('Login successful:', data.login);
-      localStorage.setItem('token', data.login.token);
+      const { data } = await loginUser({ variables: { username, password } });
+      console.log('Login successful:', data.loginUser);
+      localStorage.setItem('token', data.loginUser.token);
       navigate('/dashboard'); // Redirect to a dashboard or home page
     } catch (error) {
       console.error('Login error:', error);
+      setError(error.message); // Set error message
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="card p-4">
+      {error && <div className="alert alert-danger">{error}</div>} {/* Display error message */}
       <div className="form-group">
-        <label htmlFor="email">Email</label>
+        <label htmlFor="username">Username</label>
         <input
-          type="email"
+          type="text"
           className="form-control"
-          id="email"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="username"
+          placeholder="Enter username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
       </div>
       <div className="form-group">
