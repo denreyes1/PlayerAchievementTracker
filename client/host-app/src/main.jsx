@@ -1,12 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // Import from 'react-dom/client'
+import ReactDOM from 'react-dom/client';
 import App from './App';
 
-const rootElement = document.getElementById('root');
-const root = ReactDOM.createRoot(rootElement); // Create a root
+// Import Apollo client dependencies
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
+// Instantiate Apollo Client for your GraphQL server
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/graphql', // Update URI as needed for your environment
+  cache: new InMemoryCache(),
+});
+
+// Render the App within an ApolloProvider
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <ApolloProvider client={client}>
     <App />
-  </React.StrictMode>
+  </ApolloProvider>
 );
