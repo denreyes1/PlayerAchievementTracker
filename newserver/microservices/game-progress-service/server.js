@@ -1,11 +1,9 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
 const dotenv = require('dotenv');
-const typeDefs = require('./schemas/user.server.schema');
-const resolvers = require('./resolvers/user.server.resolvers');
+const typeDefs = require('./schemas/gameprogress.schema');
+const resolvers = require('./resolvers/gameprogress.resolvers');
 
 
 async function startServer() {
@@ -14,14 +12,7 @@ async function startServer() {
   const app = express();
   
   // Middleware
-  app.use(cookieParser());
   app.use(express.json());
-  // app.use(
-  //     cors({
-  //         origin: [process.env.CLIENT_URL, 'http://localhost:3000', 'http://localhost:5174'],
-  //         credentials: true,
-  //     })
-  // );
   
   // Connect to MongoDB
   mongoose.connect('mongodb://0.0.0.0:27017/DenisjannReyes-lab-assignment3', {
@@ -41,7 +32,7 @@ async function startServer() {
   // Apply Apollo GraphQL middleware and specify the path to /graphql
   apolloServer.applyMiddleware({ app, path: '/graphql' });
 
-  const PORT = 4000;
+  const PORT = 4001;
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}/graphql`);
   });
